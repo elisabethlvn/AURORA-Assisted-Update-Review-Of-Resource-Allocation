@@ -5,7 +5,7 @@
 ## 📌 Executive Summary
 
 ### The Problem
-In complex delivery environments, official project plans (e.g., Gantt charts, schedules) often fall out of sync with reality. The "truth" of what changed, shifting dates, new dependencies, or reassigned owners—actually lives in unstructured formats like meeting discussions, email threads, and informal updates. Manually maintaining these plans creates immense overhead for Project Managers, leading to weak governance and avoidable rework.
+In complex delivery environments, official project plans (e.g., Gantt charts, schedules) often fall out of sync with reality. The "truth" of what changed; shifting dates, new dependencies, or reassigned owners, actually lives in unstructured formats like meeting discussions, email threads, and informal updates. Manually maintaining these plans creates immense overhead for Project Managers, leading to weak governance and avoidable rework.
 
 ### The Solution
 **AURORA (Assisted Update Review Of Resource Allocation)** is an Agentic AI solution built on the Microsoft Stack. It acts as a lightweight planning assistant that listens to unstructured project conversations (emails, meeting transcripts) and converts them into structured planning updates. 
