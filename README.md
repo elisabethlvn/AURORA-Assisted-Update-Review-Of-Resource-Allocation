@@ -48,29 +48,29 @@ graph TD
     classDef source fill:#F25022,stroke:#fff,stroke-width:2px,color:#fff;
 
     subgraph Raw Data Sources
-        E[emails.csv] ::: source
-        M[meeting_notes.jsonl] ::: source
+        E["emails.csv"]:::source
+        M["meeting_notes.jsonl"]:::source
     end
 
     subgraph Storage & Indexing Layer
-        Blob[(Azure Blob Storage)] ::: storage
-        Search[Azure AI Search] ::: storage
+        Blob[("Azure Blob Storage")]:::storage
+        Search["Azure AI Search"]:::storage
     end
 
     subgraph Database Layer
-        PG[(Azure DB for PostgreSQL)] ::: database
-        Cosmos[(Azure Cosmos DB)] ::: database
+        PG[("Azure DB for PostgreSQL")]:::database
+        Cosmos[("Azure Cosmos DB")]:::database
     end
 
     subgraph Intelligence Layer
-        Agent{{Microsoft Agent Framework}} ::: intelligence
-        Foundry[Microsoft Foundry] ::: intelligence
+        Agent{{"Microsoft Agent Framework"}}:::intelligence
+        Foundry["Microsoft Foundry"]:::intelligence
     end
 
     subgraph Orchestration & Interface
-        PA[Power Automate] ::: interface
-        Teams[Microsoft Teams] ::: interface
-        PBI[Power BI] ::: interface
+        PA["Power Automate"]:::interface
+        Teams["Microsoft Teams"]:::interface
+        PBI["Power BI"]:::interface
     end
 
     E -->|Ingest| Blob
@@ -78,7 +78,7 @@ graph TD
     Blob -->|Index| Search
     Foundry -.->|Fine-tunes| Agent
     Search -->|Context retrieval| Agent
-    PG -->|Read tasks_master\n& plan_snapshots| Agent
+    PG -->|"Read tasks_master & plan_snapshots"| Agent
     Agent -->|Write AI reasoning| Cosmos
     Agent -->|Write draft_plan_updates| PG
     PG -->|Trigger new drafts| PA
