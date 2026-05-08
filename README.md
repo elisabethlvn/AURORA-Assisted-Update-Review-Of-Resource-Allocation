@@ -38,6 +38,22 @@ This solution is designed to scale across the enterprise using the mandated Micr
 ---
 
 ## 🧩 Architecture Flow
+```mermaid
+flowchart LR
+  A["Outlook / SharePoint / Teams notes"] --> B["Power Automate ingestion flow"]
+  B --> C["Azure Function: IngestProjectData"]
+  C --> D["Microsoft Foundry Agent"]
+  C --> E["Azure Database for PostgreSQL"]
+  E --> F["Power BI dashboard"]
+  E --> G["Power Automate approval flow"]
+  G --> H["Teams Adaptive Card"]
+  H --> I["Azure Function: ReviewDraft"]
+  I --> E
+  J["Teams question"] --> K["Power Automate chat flow"]
+  K --> L["Azure Function: AuroraTeamsBot"]
+  L --> J
+
+```
 
 ```mermaid
 graph TD
