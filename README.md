@@ -203,7 +203,7 @@ The SharePoint list `Aurora Draft Review` acts as the PM review desk.
 Recommended columns:
 
 ```text
-Title                  draft ID
+draft ID
 project_id
 source_id
 update_type
@@ -297,4 +297,104 @@ The Power BI report contains three primary views.
 - source evidence
 - comments
 
+## Azure Function Endpoints
+
+### `IngestUploadedFile`
+
+Receives uploaded CSV or JSONL file content from Power Automate.
+
+### `IngestProjectData`
+
+Processes one project communication record and extracts draft updates.
+
+### `ReviewDraft`
+
+Approves or rejects a draft. Approved drafts update `tasks_master`; all decisions are written to `change_log`.
+
+### `GetPendingDrafts`
+
+Returns pending or clarification-needed drafts.
+
+### `SearchEvidence`
+
+Searches indexed source evidence in Azure AI Search.
+
+### `AuroraTeamsBot`
+
+Answers Teams questions using PostgreSQL, Azure AI Search, and Foundry.
+
+### `BuildInfo`
+
+Returns deployed app version and configuration status.
+
+## Environment Variables
+
+Required:
+
+```text
+DB_HOST
+DB_USER
+DB_PASS
+DB_NAME
+FOUNDRY_ENDPOINT
+FOUNDRY_AGENT_NAME
+FOUNDRY_AGENT_VERSION
+```
+
+For Azure AI Search:
+
+```text
+AZURE_SEARCH_ENDPOINT
+AZURE_SEARCH_API_KEY
+AZURE_SEARCH_INDEX_NAME
+AZURE_SEARCH_API_VERSION
+```
+
+## Why This Is More Than Summarization
+
+AURORA does not simply summarize meetings. It converts conversations into governed planning updates.
+
+It supports:
+
+- structured extraction
+- task matching
+- ambiguity detection
+- confidence scoring
+- source evidence
+- human approval
+- correction workflow
+- official plan update
+- rejection tracking
+- audit trail
+- dashboard reporting
+- Teams-based project queries
+
+## MVP Scope
+
+The MVP focuses on a curated project dataset containing meeting notes, email-style updates, task trackers, dependencies, people, and plan snapshots. It prioritizes reliability, transparency, and review-before-update governance over full automation.
+
+## Demo Flow
+
+1. Upload an email or meeting-note file to SharePoint.
+2. Power Automate calls `IngestUploadedFile`.
+3. AURORA extracts draft updates.
+4. SharePoint review items are created.
+5. Teams notifies the PM.
+6. PM approves one clean draft.
+7. PM corrects one ambiguous draft.
+8. PM rejects one irrelevant draft.
+9. `tasks_master` updates only for approved changes.
+10. `change_log` records approved and rejected decisions.
+11. Power BI shows the updated plan and audit trail.
+12. Teams bot explains why a draft was created.
+
+## Future Enhancements
+
+- Baseline vs current plan delta detection using `plan_snapshots`
+- Dependency-aware schedule impact analysis
+- Priority scoring based on urgency, blockers, and due dates
+- Workload-aware owner recommendations using `people`
+- Azure Blob Storage archive for raw uploaded project files
+- Cosmos DB event stream for immutable agent trace logs
+- More advanced natural-language project analytics in Teams
 
