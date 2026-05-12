@@ -49,6 +49,7 @@ flowchart LR
   O --> S
 
 ```
+The architecture starts with meeting-note or email file upload in SharePoint. Power Automate invokes Azure Functions to extract plan updates using Azure AI Foundry and validation rules, stores draft updates in Azure PostgreSQL, routes them to a SharePoint human review queue, and updates the official project plan only after PM approval. Power BI and Teams provide reporting and conversational access.
 
 ---
 ## Microsoft Stack
