@@ -390,11 +390,7 @@ The MVP focuses on a curated project dataset containing meeting notes, email-sty
 
 ## Future Enhancements
 
-- Baseline vs current plan delta detection using `plan_snapshots`
 - Dependency-aware schedule impact analysis
 - Priority scoring based on urgency, blockers, and due dates
-- Workload-aware owner recommendations using `people`
-- Azure Blob Storage archive for raw uploaded project files
-- Cosmos DB event stream for immutable agent trace logs
-- More advanced natural-language project analytics in Teams
+- More advanced natural-language project analytics in Aurora Teams Bot
 
