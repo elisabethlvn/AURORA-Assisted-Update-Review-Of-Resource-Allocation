@@ -51,24 +51,250 @@ flowchart LR
 ```
 
 ---
+## Microsoft Stack
 
-## 💻 The Proof of Concept (Local Prototype)
+### Active Services
 
-To prove the core intelligence of the Agent Framework, this repository contains a functional prototype of the extraction engine. 
+- **Microsoft Foundry / Azure OpenAI**  
+  Used for AI-assisted extraction and reasoning over project updates.
 
-The Python script `extract_plan_updates.py` simulates the Microsoft Agent Framework. It ingests the unstructured `meeting_notes.jsonl` and `emails.csv` datasets, parses the natural language for task updates, and outputs a structured `draft_plan_updates.csv` representing the "Approvals Queue."
+- **Azure Functions**  
+  Hosts the backend APIs:
+  - `IngestUploadedFile`
+  - `IngestProjectData`
+  - `ReviewDraft`
+  - `GetPendingDrafts`
+  - `SearchEvidence`
+  - `AuroraTeamsBot`
+  - `BuildInfo`
 
-### How to Run the Prototype
+- **Azure Database for PostgreSQL**  
+  Structured system of record for:
+  - `tasks_master`
+  - `draft_plan_updates`
+  - `change_log`
+  - `people`
+  - `dependencies`
+  - `plan_snapshots`
 
-1. Ensure you have Python 3 installed.
-2. Verify that `meeting_notes.jsonl` and `emails.csv` are in the root directory.
-3. Run the extraction script:
-   ```bash
-   python3 extract_plan_updates.py
-   ```
-4. The script will generate a `draft_plan_updates.csv` file containing over 480 structured updates (e.g., Status Updates, Date Shifts, New Tasks) with confidence scores and source evidence.
+- **Power Automate**  
+  Orchestrates file ingestion, SharePoint review item creation, Teams notifications, approval/rejection flows, and Power BI refresh.
 
-### Dashboard Visualization
-To view the Human-in-the-Loop experience, open Power BI Desktop and import both `tasks_master.csv` (the baseline) and `draft_plan_updates.csv` (the AI drafts) to visualize the Approvals Queue.
+- **SharePoint Lists**  
+  Human-in-the-loop review and correction interface.
+
+- **Microsoft Teams**  
+  Notification channel and conversational interface for AURORA.
+
+- **Power BI**  
+  Reporting layer for master plan, draft review queue, Gantt-style views, and audit history.
+
+- **Azure AI Search**  
+  Indexes raw source evidence from uploaded emails and meeting notes, enabling searchable audit support.
+
+- **GitHub**  
+  Source control and submission repository.
+
+### Optional / Future Services
+
+- **Azure Blob Storage**  
+  Can be used as a raw document archive/data lake.
+
+- **Azure Cosmos DB**  
+  Not required in the current MVP because auditability is handled in PostgreSQL `change_log`.
+
+## Data Flow
+
+1. A project file is uploaded to SharePoint.
+2. Power Automate reads the file and calls `IngestUploadedFile`.
+3. The Azure Function parses email or meeting-note records.
+4. AURORA extracts plan updates using deterministic rules and Azure AI Foundry fallback.
+5. Raw source records are indexed into Azure AI Search.
+6. Extracted updates are validated against source evidence.
+7. Matching logic checks whether each update relates to an existing task.
+8. Drafts are inserted into `draft_plan_updates`.
+9. Power Automate creates rows in the SharePoint `Aurora Draft Review` list.
+10. Teams notifies the PM that review items are ready.
+11. The PM approves, rejects, or corrects drafts in SharePoint.
+12. Power Automate calls `ReviewDraft`.
+13. Approved drafts update `tasks_master`.
+14. Approved and rejected decisions are recorded in `change_log`.
+15. Power BI visualizes the latest project plan and audit trail.
+
+## Human-In-The-Loop Review
+
+AURORA does not directly update the official plan. Every extracted update becomes a draft first.
+
+Drafts include:
+
+- draft ID
+- project ID
+- source ID
+- update type
+- matched task ID
+- proposed change summary
+- confidence
+- source evidence
+- clarification question
+- review status
+
+The PM can:
+
+- approve a clean draft
+- reject an irrelevant draft
+- correct task ID, owner, due date, or status
+- retry failed submissions after fixing correction fields
+
+Failed submissions are visible in SharePoint through `flow_status` and `flow_error`, so PMs do not need to inspect Power Automate run logs.
+
+## PostgreSQL Tables
+
+### `tasks_master`
+
+Official project plan table. Updated only after human approval.
+
+### `draft_plan_updates`
+
+AI-generated draft updates awaiting review or already reviewed.
+
+### `change_log`
+
+Audit trail for approved and rejected decisions.
+
+Approved updates record field-level changes:
+
+```text
+change_type
+field_changed
+old_value
+new_value
+reviewed_by
+source_evidence
+comments
+```
+
+Rejected updates record:
+
+```text
+change_type = REJECTED
+field_changed = No official plan change
+old_value = NULL
+new_value = NULL
+reviewed_by
+comments
+```
+
+### `plan_snapshots`
+
+Used for baseline/current comparison and future delta detection.
+
+### `dependencies`
+
+Stores task dependency relationships for sequencing and Gantt-style views.
+
+### `people`
+
+Stores team member metadata for owner matching and future assignment recommendations.
+
+## SharePoint Review Queue
+
+The SharePoint list `Aurora Draft Review` acts as the PM review desk.
+
+Recommended columns:
+
+```text
+Title                  draft ID
+project_id
+source_id
+update_type
+task_title
+proposed_change
+review_status
+confidence
+source_evidence
+clarification_question
+matched_task_id
+corrected_task_id
+corrected_owner_name
+corrected_due_date
+corrected_status
+decision
+review_notes
+flow_status
+flow_error
+```
+
+`decision` choices:
+
+```text
+Pending
+Approve
+Reject
+```
+
+`corrected_status` choices:
+
+```text
+No change
+Not started
+In progress
+Blocked
+Done
+```
+
+`flow_status` choices:
+
+```text
+Waiting for review
+Processing
+Completed
+Failed
+```
+
+## Teams Bot Capabilities
+
+AURORA can answer operational project questions using PostgreSQL and Azure AI Search.
+
+Example questions:
+
+```text
+Aurora, why was D00043 created?
+Aurora, show pending approvals for PRJ001.
+Aurora, show blocked tasks.
+Aurora, show change log for T00065.
+Aurora, what changed this week?
+Aurora, search evidence about coordination model.
+```
+
+Known draft IDs and task IDs are answered deterministically from PostgreSQL. Broader source-evidence questions use Azure AI Search.
+
+## Power BI Dashboard
+
+The Power BI report contains three primary views.
+
+### 1. Master Plan
+
+- current tasks from `tasks_master`
+- task status distribution
+- blocked tasks
+- upcoming deadlines
+- Gantt-style timeline
+
+### 2. AI Draft Review
+
+- pending drafts
+- drafts needing clarification
+- approved/rejected review history
+- confidence levels
+- source evidence
+
+### 3. Change Log
+
+- approved task changes
+- rejected AI draft decisions
+- reviewer
+- old/new values
+- source evidence
+- comments
 
 
