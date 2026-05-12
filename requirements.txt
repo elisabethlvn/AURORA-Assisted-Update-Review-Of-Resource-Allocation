@@ -1,0 +1,7 @@
+azure-functions
+openai
+pandas
+sqlalchemy
+psycopg2-binary
+azure-identity
+azure-ai-projects>=2.0.0
