@@ -28,27 +28,8 @@ AURORA ingests project emails and meeting notes, extracts structured planning up
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  A["SharePoint file upload"] --> B["Power Automate ingestion flow"]
-  B --> C["Azure Function: IngestUploadedFile"]
-  C --> D["Azure AI Foundry Agent + validation rules"]
-  D --> E["Azure PostgreSQL: draft_plan_updates"]
-  D --> S["Azure AI Search: source evidence index"]
-  E --> F["Power Automate creates SharePoint review items"]
-  F --> G["SharePoint: Aurora Draft Review"]
-  F --> H["Teams notification"]
-  G --> I["PM corrects / approves / rejects"]
-  I --> J["Power Automate review flow"]
-  J --> K["Azure Function: ReviewDraft"]
-  K --> L["PostgreSQL: tasks_master + change_log"]
-  L --> M["Power BI dashboard"]
-  N["Teams question"] --> O["Azure Function: AuroraTeamsBot"]
-  O --> E
-  O --> L
-  O --> S
+![Aurora Solution Architecture](./"Solution Architecture.png")
 
-```
 The architecture starts with meeting-note or email file upload in SharePoint. Power Automate invokes Azure Functions to extract plan updates using Azure AI Foundry and validation rules, stores draft updates in Azure PostgreSQL, routes them to a SharePoint human review queue, and updates the official project plan only after PM approval. Power BI and Teams provide reporting and conversational access.
 
 ---
