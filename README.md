@@ -253,7 +253,7 @@ Known draft IDs and task IDs are answered deterministically from PostgreSQL. Bro
 ## Power BI Dashboard
 [Visit Aurora - Dashboard PowerBI](https://app.powerbi.com/view?r=eyJrIjoiZDRlOWYyZGItZTkyYS00ZWZkLWFjOTMtNGE3YjM3YWM2NTc0IiwidCI6ImNhZmYyODc3LTEyNGYtNDkwNi04N2NiLTRjMzYxMDIyMDA3ZCJ9&pageName=b4151fcad7daf885431a)
 
-[![Aurora - Dashboard](<./PowerBI.png>)](https://app.powerbi.com/view?r=eyJrIjoiZDRlOWYyZGItZTkyYS00ZWZkLWFjOTMtNGE3YjM3YWM2NTc0IiwidCI6ImNhZmYyODc3LTEyNGYtNDkwNi04N2NiLTRjMzYxMDIyMDA3ZCJ9&pageName=b4151fcad7daf885431a)
+[![Aurora - Dashboard](<./AuroraPowerBI.png>)](https://app.powerbi.com/view?r=eyJrIjoiZDRlOWYyZGItZTkyYS00ZWZkLWFjOTMtNGE3YjM3YWM2NTc0IiwidCI6ImNhZmYyODc3LTEyNGYtNDkwNi04N2NiLTRjMzYxMDIyMDA3ZCJ9&pageName=b4151fcad7daf885431a)
 
 The Power BI report contains three primary views.
 
